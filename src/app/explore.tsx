@@ -28,6 +28,7 @@ export default function ExploreScreen() {
   const theme = useTheme();
   const styles = createStyles(theme);
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const [searched, setSearched] = useState(false);
 
   const glow = useSharedValue(0);
 
@@ -55,6 +56,7 @@ const glowStyle = useAnimatedStyle(() => ({
 
     setLoading(true);
     setError(null);
+    setSearched(true);
 
     try {
       const tracks = await searchMusic(term);
@@ -97,6 +99,9 @@ const glowStyle = useAnimatedStyle(() => ({
 
       {loading && <Text style={styles.info}>Cargando...</Text>}
       {error && <Text style={styles.error}>{error}</Text>}
+      {!loading && !error && searched && results.length === 0 && (
+        <Text style={styles.info}>No se encontraron resultados para "{term}"</Text>
+      )}
 
       <FlatList
         data={results}

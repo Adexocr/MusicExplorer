@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Spacing } from '@/constants/theme';
@@ -8,7 +8,7 @@ import { useTheme } from '@/hooks/use-theme';
 export default function FavoritesScreen() {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const { favorites } = useFavorites();
+  const { favorites, removeFavorite } = useFavorites();
 
   if (favorites.length === 0) {
     return (
@@ -27,7 +27,7 @@ export default function FavoritesScreen() {
         renderItem={({ item }) => (
           <View style={styles.resultCard}>
             <Image source={{ uri: item.coverUrl }} style={styles.cover} />
-            <View>
+            <View style={styles.resultText}>
               <Text style={styles.title} numberOfLines={1}>
                 {item.title}
               </Text>
@@ -35,6 +35,9 @@ export default function FavoritesScreen() {
                 {item.artist}
               </Text>
             </View>
+            <TouchableOpacity onPress={() => removeFavorite(item.id)}>
+              <Text style={styles.heart}>♥</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -61,6 +64,13 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
       backgroundColor: theme.backgroundElement,
       borderRadius: Spacing.two,
       padding: Spacing.two,
+    },
+    resultText: {
+    flex: 1,
+    },
+    heart: {
+    fontSize: 22,
+    color: '#FF073A',
     },
     cover: {
       width: 40,
