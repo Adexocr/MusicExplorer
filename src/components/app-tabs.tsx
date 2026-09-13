@@ -11,28 +11,20 @@ export default function AppTabs() {
     <NativeTabs
       backgroundColor={colors.background}
       indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
+      labelStyle={{ selected: { color: '#FF073A' } }}>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Label>Inicio</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" selectedColor="#FF073A" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="explore">
         <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" selectedColor="#FF073A" />
       </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="favorites">
         <NativeTabs.Trigger.Label>Favoritos</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/favorites.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Icon sf="heart.fill" md="favorite" selectedColor="#FF073A" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
