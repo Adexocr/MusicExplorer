@@ -1,6 +1,7 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import { Track } from '@/services/musicApi';
+import { loadFavorites, saveFavorites } from '@/storage/favoritesStorage';
 
 interface FavoritesContextType {
   favorites: Track[];
@@ -14,6 +15,14 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<Track[]>([]);
 
+  useEffect(() => {
+    loadFavorites().then(setFavorites);
+  }, []);
+
+  useEffect(() => {
+    saveFavorites(favorites);
+  }, [favorites]);
+
   function addFavorite(track: Track) {
     setFavorites((prev) => [...prev, track]);
   }
@@ -21,7 +30,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   function removeFavorite(id: number) {
     setFavorites((prev) => prev.filter((t) => t.id !== id));
   }
-// Para que el corazon de cada cancion sepa si es favorito o no. 
+
   function isFavorite(id: number) {
     return favorites.some((t) => t.id === id);
   }
