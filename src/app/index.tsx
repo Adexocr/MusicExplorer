@@ -1,98 +1,92 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function HomeScreen() {
+  const theme = useTheme();
+  const styles = createStyles(theme);
+
+  const glow = useSharedValue(0);
+
+  useEffect(() => {
+    glow.value = withRepeat(
+      withTiming(1, { duration: 1300, easing: Easing.inOut(Easing.ease) }),
+      -1,
+      true
+    );
+  }, []);
+
+  const glowStyle = useAnimatedStyle(() => ({
+    shadowOpacity: 0.4 + glow.value * 0.6,
+    shadowRadius: 14 + glow.value * 20,
+    transform: [{ scale: 1 + glow.value * 0.05 }],
+  }));
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <LinearGradient
+      colors={['#1a0007', '#3d0714', theme.background]}
+      style={styles.gradient}>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.center}>
+          <Animated.View style={[styles.iconGlow, glowStyle]}>
+            <Ionicons name="musical-notes" size={72} color="#FF073A" />
+          </Animated.View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
+          <Text style={styles.title}>Music Explorer</Text>
+          <Text style={styles.subtitle}>
+            Tu catálogo personal de música favorita
+          </Text>
+        </View>
       </SafeAreaView>
-    </ThemedView>
+    </LinearGradient>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});
+function createStyles(theme: ReturnType<typeof useTheme>) {
+  return StyleSheet.create({
+    gradient: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+      paddingHorizontal: Spacing.four,
+    },
+    center: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: Spacing.three,
+    },
+    iconGlow: {
+      shadowColor: '#FF073A',
+      shadowOffset: { width: 0, height: 0 },
+      elevation: 15,
+      marginBottom: Spacing.two,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      color: theme.text,
+      textShadowColor: '#FF073A',
+      textShadowOffset: { width: 0, height: 0 },
+      textShadowRadius: 12,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: theme.textSecondary,
+      textAlign: 'center',
+    },
+  });
+}
