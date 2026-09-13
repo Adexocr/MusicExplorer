@@ -20,12 +20,14 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Spacing } from '@/constants/theme';
+import { useFavorites } from '@/context/FavoritesContext';
 import { useTheme } from '@/hooks/use-theme';
 import { searchMusic, Track } from '@/services/musicApi';
 
 export default function ExploreScreen() {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   const glow = useSharedValue(0);
 
@@ -100,23 +102,33 @@ const glowStyle = useAnimatedStyle(() => ({
         data={results}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: Spacing.two }}
-        renderItem={({ item }) => (
+       renderItem={({ item }) => {
+        const favorited = isFavorite(item.id);
+        return (
           <View style={styles.resultCard}>
             <Image source={{ uri: item.coverUrl }} style={styles.cover} />
             <View style={styles.resultText}>
               <Text style={styles.title} numberOfLines={1}>
                 {item.title}
-              </Text>
-              <Text style={styles.artist} numberOfLines={1}>
-                {item.artist}
-              </Text>
-            </View>
-          </View>
-        )}
+        </Text>
+        <Text style={styles.artist} numberOfLines={1}>
+          {item.artist}
+        </Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => (favorited ? removeFavorite(item.id) : addFavorite(item))}>
+        <Text style={[styles.heart, favorited && styles.heartActive]}>
+          {favorited ? '♥' : '♡'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+      }}
       />
     </SafeAreaView>
   );
 }
+
 
 function AnimatedLetter({ letter, index, style }: { letter: string; index: number; style: any }) {
   const offset = useSharedValue(0);
@@ -195,6 +207,13 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
     error: {
       color: '#E5484D',
       marginBottom: Spacing.two,
+    },
+    heart: {
+  fontSize: 22,
+  color: theme.textSecondary,
+    },
+    heartActive: {
+    color: '#FF073A',
     },
     resultCard: {
       flexDirection: 'row',
