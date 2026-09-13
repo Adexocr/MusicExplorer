@@ -1,4 +1,4 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Spacing } from '@/constants/theme';
@@ -8,7 +8,15 @@ import { useTheme } from '@/hooks/use-theme';
 export default function FavoritesScreen() {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const { favorites, removeFavorite } = useFavorites();
+  const { favorites, isLoading, removeFavorite } = useFavorites();
+
+    if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centered]} edges={['top']}>
+        <ActivityIndicator color="#FF073A" />
+      </SafeAreaView>
+    );
+  }
 
   if (favorites.length === 0) {
     return (
@@ -52,18 +60,27 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
       backgroundColor: theme.background,
       paddingHorizontal: Spacing.three,
     },
+        centered: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
     empty: {
       color: theme.text,
       marginTop: Spacing.four,
       textAlign: 'center',
     },
-    resultCard: {
+        resultCard: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: Spacing.three,
       backgroundColor: theme.backgroundElement,
       borderRadius: Spacing.two,
       padding: Spacing.two,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
     },
     resultText: {
     flex: 1,

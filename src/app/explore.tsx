@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   StyleSheet,
@@ -97,7 +98,7 @@ const glowStyle = useAnimatedStyle(() => ({
         </TouchableOpacity>
       </Animated.View>
 
-      {loading && <Text style={styles.info}>Cargando...</Text>}
+      {loading && <ActivityIndicator color="#FF073A" style={styles.spinner} />}
       {error && <Text style={styles.error}>{error}</Text>}
       {!loading && !error && searched && results.length === 0 && (
         <Text style={styles.info}>No se encontraron resultados para "{term}"</Text>
@@ -192,10 +193,10 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
       alignItems: 'center',
       borderWidth: 5,
       borderColor: '#f2909e',
-  },
+    },
   buttonTextRow: {
   flexDirection: 'row',
-},
+    },
     buttonText: {
       color: '#ffffff',
       fontWeight: 'bold',
@@ -204,10 +205,13 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
       textShadowColor: '#671c2b',
       textShadowOffset: { width: 0, height: 0 },
       textShadowRadius: 10,
-},
+    },
     info: {
       color: theme.text,
       marginBottom: Spacing.two,
+    },
+    spinner: {
+  marginBottom: Spacing.two,
     },
     error: {
       color: '#E5484D',
@@ -221,12 +225,17 @@ function createStyles(theme: ReturnType<typeof useTheme>) {
     color: '#FF073A',
     },
     resultCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: Spacing.three,
-      backgroundColor: theme.backgroundElement,
-      borderRadius: Spacing.two,
-      padding: Spacing.two,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    backgroundColor: theme.backgroundElement,
+    borderRadius: Spacing.two,
+    padding: Spacing.two,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
     },
     resultText: {
       flex: 1,

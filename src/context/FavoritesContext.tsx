@@ -5,6 +5,7 @@ import { loadFavorites, saveFavorites } from '@/storage/favoritesStorage';
 
 interface FavoritesContextType {
   favorites: Track[];
+  isLoading: boolean;
   addFavorite: (track: Track) => void;
   removeFavorite: (id: number) => void;
   isFavorite: (id: number) => boolean;
@@ -14,13 +15,19 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<Track[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadFavorites().then(setFavorites);
+    loadFavorites().then((stored) => {
+      setFavorites(stored);
+      setIsLoading(false);
+    });
   }, []);
 
   useEffect(() => {
-    saveFavorites(favorites);
+    if (!isLoading) {
+      saveFavorites(favorites);
+    }
   }, [favorites]);
 
   function addFavorite(track: Track) {
@@ -36,7 +43,8 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addFavorite, removeFavorite, isFavorite }}>
+    <FavoritesContext.Provider
+      value={{ favorites, isLoading, addFavorite, removeFavorite, isFavorite }}>
       {children}
     </FavoritesContext.Provider>
   );
